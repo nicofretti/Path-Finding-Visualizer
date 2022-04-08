@@ -1,6 +1,6 @@
-import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {animate} from "@angular/animations";
+import {Component, OnInit} from '@angular/core';
 import Konva from "konva";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-main',
@@ -9,52 +9,85 @@ import Konva from "konva";
 
 
 export class MainComponent implements OnInit {
-  private width: number = 40;
-  private grid = [];
+  private map_width: number = 800;
+  private map_height: number = 600;
+  private cell_size: number = 25;
+  private colors = {
+    'cell_background': '#c4c4c4',
+    'cell_stroke': '#ffffff',
+    'cell_wall': '#3f3f3f',
+
+  }
+  private layer = new Konva.Layer();
+  settings_form = new FormGroup({
+    draw_wall: new FormControl(false),
+  })
   constructor() {
 
   }
+  // method to select the color to assign to the cell
+  fillColor(old_color: string) {
+    if(old_color==this.colors.cell_background) {
+      return this.colors.cell_wall;
+    }else{
+      return this.colors.cell_background;
+    }
+  }
 
-  ngOnInit(): void {
-    // @ts-ignore
+  initGrid(){
     let stage = new Konva.Stage({
       container: 'container',
-      width: 800,
-      height: 600 ,
+      width: this.map_width,
+      height: this.map_height ,
     });
-    let layer = new Konva.Layer();
-    //make a grid width x width with rect attatched
-    let y = 0; let x = 0;let size = 800/this.width;
-    console.log(size);
+    stage.on("mouseleave", () => {
+      this.settings_form.setValue({
+        draw_wall: false,
+      })
+    });
+
+    let y = 0; let x = 0;let size = 800/this.cell_size;
     for(let i = 0;i<size;i++){
       for (let j = 0; j<size; j++){
         let rect = new Konva.Rect({
           x: x,
           y: y,
-          width: this.width,
-          height: this.width,
-          fill: '#c4c4c4',
-          stroke: '#ffffff',
+          width: this.cell_size,
+          height: this.cell_size,
+          fill: this.colors.cell_background,
+          stroke: this.colors.cell_stroke,
           strokeWidth: 1,
         });
-        layer.add(rect);
+
+        this.layer.add(rect);
         // change color on mouseover when mouse is clicked
-        rect.on('mouseover', function() {
-          //check if the mouse is clicking
+        rect.on('mouseover', () => {
+          // check if mouse button is pressed
+          if (this.settings_form.value.draw_wall) {
+            rect.fill(this.fillColor(rect.attrs.fill));
+          }
 
         });
-
-        rect.on('mousedown', function () {
-          let color = '#' + Math.floor(Math.random() * 16777215).toString(16);
-          this.fill(color);
+        rect.on('mousedown', ()=>{
+          this.settings_form.setValue({'draw_wall': true});
+          rect.fill(this.fillColor(rect.attrs.fill));
         });
-        x += this.width;
+        rect.on('mouseup', ()=>{
+          this.settings_form.setValue({'draw_wall': false});
+        });
+
+        x += this.cell_size;
       }
       x = 0;
-      y += this.width;
+      y += this.cell_size;
 
     }
-    stage.add(layer);
+    stage.add(this.layer);
+  }
+
+  ngOnInit(): void {
+    this.initGrid();
+
 
   }
 

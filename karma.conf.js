@@ -25,7 +25,7 @@ module.exports = function (config) {
       suppressAll: true // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/giuliett'),
+      dir: require('path').join(__dirname, './coverage/Path-Finding-Visualizer'),
       subdir: '.',
       reporters: [
         { type: 'html' },
