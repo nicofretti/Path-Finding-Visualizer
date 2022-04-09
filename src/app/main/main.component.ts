@@ -12,16 +12,24 @@ export class MainComponent implements OnInit {
   private map_width: number = 800;
   private map_height: number = 600;
   private cell_size: number = 25;
+
   private colors = {
     'cell_background': '#c4c4c4',
     'cell_stroke': '#ffffff',
     'cell_wall': '#3f3f3f',
+    'cell_start': '#BA3838',
+    'cell_final': '#40A338'
 
   }
   private layer = new Konva.Layer();
   settings_form = new FormGroup({
     draw_wall: new FormControl(false),
-  })
+  });
+  // Enviroment variables
+  private grid: any;
+  private start_cell: any;
+  private final_cell: any;
+
   constructor() {
 
   }
@@ -47,7 +55,9 @@ export class MainComponent implements OnInit {
     });
 
     let y = 0; let x = 0;let size = 800/this.cell_size;
+    this.grid = [];
     for(let i = 0;i<size;i++){
+      this.grid.push([])
       for (let j = 0; j<size; j++){
         let rect = new Konva.Rect({
           x: x,
@@ -58,7 +68,7 @@ export class MainComponent implements OnInit {
           stroke: this.colors.cell_stroke,
           strokeWidth: 1,
         });
-
+        this.grid[i].push(rect);
         this.layer.add(rect);
         // change color on mouseover when mouse is clicked
         rect.on('mouseover', () => {
@@ -80,9 +90,14 @@ export class MainComponent implements OnInit {
       }
       x = 0;
       y += this.cell_size;
-
     }
     stage.add(this.layer);
+    // Set start position
+    this.start_cell = this.grid[Math.round(size/3)][(Math.round(size/6))];
+    this.start_cell.fill(this.colors.cell_start);
+    // Set final position
+    this.final_cell = this.grid[Math.round(size/3)][(Math.round((5/6)*size))]
+    this.final_cell.fill(this.colors.cell_final);
   }
 
   ngOnInit(): void {
