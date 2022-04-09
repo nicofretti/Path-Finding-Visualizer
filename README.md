@@ -3,7 +3,7 @@
 This project is a simple path-finding visualizer written using the Angular framework with some helpful libraries.
 
 ## To-Do
-- [X] SetUp enviroment
+- [X] SetUp environment
 - [X] Make the stage
 - [X] Handle draw wall
 - [ ] Handle move start and final position
@@ -12,6 +12,6 @@ This project is a simple path-finding visualizer written using the Angular frame
 - [ ] Implement some algorithms
 - [ ] Implement some heuristics
 - [ ] Implement animation
-- ... other stuff
+- [ ] ... other stuff
 
 
